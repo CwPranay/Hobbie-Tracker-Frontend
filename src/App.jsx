@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import Navbar from './components/Navbar';
 import Register from './pages/Register';
 import Friends from "./pages/Freinds";
+import ActivityFeed from './pages/ActivityFeed';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -30,7 +31,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/activity" element={<ActivityFeed />} />
       </Routes>
+
+
     </BrowserRouter>
   )
 }
