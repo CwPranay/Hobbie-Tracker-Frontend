@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -13,14 +13,15 @@ const Login = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (error) setError(""); // clear error on typing
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     if (!form.email || !form.password) {
-      return setError("All fields are required");
+      setError("All fields are required");
+      return;
     }
 
     try {
@@ -28,11 +29,9 @@ const Login = () => {
       const data = await loginUser(form);
 
       localStorage.setItem("token", data.token);
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed"
-      );
+      setError(err.response?.data?.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -41,7 +40,7 @@ const Login = () => {
   return (
     <AuthLayout title="Welcome Back">
       {error && (
-        <p className="mb-4 text-sm text-red-500 text-center">
+        <p className="mb-4 rounded-md bg-red-500/10 border border-red-500/30 px-3 py-2 text-sm text-red-400 text-center">
           {error}
         </p>
       )}
@@ -53,16 +52,33 @@ const Login = () => {
           type="email"
           value={form.email}
           onChange={handleChange}
+          autoComplete="email"
         />
+
         <Input
           label="Password"
           name="password"
           type="password"
           value={form.password}
           onChange={handleChange}
+          autoComplete="current-password"
         />
-        <Button loading={loading}>Login</Button>
+
+        <Button loading={loading} disabled={loading}>
+          Login
+        </Button>
       </form>
+
+      {/* Register link */}
+      <p className="mt-4 text-sm text-center text-zinc-400">
+        Don’t have an account?{" "}
+        <Link
+          to="/register"
+          className="text-indigo-500 hover:text-indigo-400 font-medium"
+        >
+          Register
+        </Link>
+      </p>
     </AuthLayout>
   );
 };
